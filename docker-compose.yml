@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+  task-auth:
+    image: taskauth
+    build:
+      context: .
+      dockerfile: Task-Auth/Dockerfile
+  task-api:
+    image: taskapi
+    build:
+      context: .
+      dockerfile: Task-Api/Dockerfile
+    depends_on:
+      - task-auth
+      - rabbitmq
+  subtask-api:
+    image: subtaskapi
+    build:
+      context: . 
+      dockerfile: SubTask-Api/Dockerfile
+    depends_on:
+      - task-auth
+      - rabbitmq
+  taskapigateway:
+    image: taskapigateway
+    build:
+      context: .
+      dockerfile: TaskApiGateway/Dockerfile
+    depends_on:
+      - task-api
+      - subtask-api
